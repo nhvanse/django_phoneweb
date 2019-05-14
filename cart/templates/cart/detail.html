@@ -1,0 +1,77 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}
+    Giỏ hàng
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+        <div class="row" style="margin-top: 6%">
+        <h2>Giỏ hàng của bạn:
+            <span class="badge pull-right">
+                {% with totail_items=cart|length %}
+                    {% if cart|length > 0 %}
+                        Đơn hàng:
+                        <a href="{% url "cart:cart_detail" %}" style="color: #ffffff">
+                            {{ totail_items }} sản phẩm, Tổng: {{ cart.get_total_price }} đ
+                        </a>
+                        {% else %}
+                        Giỏ hàng trống.
+                    {% endif %}
+                {% endwith %}
+            </span>
+        </h2>
+            <table class="table table-striped table-hover">
+                <thead style="background-color: #5AC8FA">
+                    <tr>
+                        <th>Ảnh</th>
+                        <th>Sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th>Xóa</th>
+                        <th>Đơn giá</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for item in cart %}
+                    {% with product=item.product  %}
+                        <tr>
+                            <td>
+                                <a href="{{ product.get_absolute_url }}">
+                                    <img src="{% if product.image %} {{ product.image.url }} {% else %} {% static 'img/default.jpg' %} {% endif %}" alt="..." style="height: 130px; width: auto">
+                                </a>
+                            </td>
+                            <td>{{ product.name }}</td>
+                            <td>
+                                <form action="{% url "cart:cart_add" product.id %}" method="post">
+                                    {% csrf_token %}
+                                    {{ item.update_quantity_form.quantity }}
+                                    {{ item.update_quantity_form.update }}
+                                    <input type="submit" value="Cập nhật" class="btn btn-info">
+                                </form>
+                            </td>
+                            <td>
+                                <a href="{% url "cart:cart_remove" product.id %}">Xóa</a>
+                            </td>
+                            <td>{{ item.price }} đ</td>
+                            <td>{{ item.total_price }} đ</td>
+                        </tr>
+                    {% endwith %}
+                {% endfor %}
+                <tr style="background-color: #5AC8FA">
+                    <td><b>Tổng</b></td>
+                    <td colspan="4"></td>
+                    <td colspan="num"><b>{{ cart.get_total_price }} đ</b></td>
+                </tr>
+                </tbody>
+            </table>
+        <p class="text-right">
+            <a href="{% url "shop:product_list" %}" class="btn btn-default">Tiếp tục mua sắm</a>
+            {% if cart|length > 0 %}
+            <a href="{% url "orders:order_create" %}" class="btn btn-primary">Đặt hàng</a>
+            {% endif %}
+        </p>
+        </div>
+    </div>
+{% endblock %}
