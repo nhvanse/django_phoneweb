@@ -3,15 +3,13 @@
 # Create your models here.
 from django.db import models
 from shop.models import Product
+from django.contrib.auth.models import User
 
 
 class Order(models.Model):
-    first_name = models.CharField(max_length=60)
-    last_name = models.CharField(max_length=60)
-    email = models.EmailField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=3)
     address = models.CharField(max_length=150)
     phone = models.CharField(max_length=30)
-    city = models.CharField(max_length=100)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     paid = models.BooleanField(default=False)
